@@ -5,16 +5,13 @@ import networkx as nx
 def is_graph_of_type_path(graph: nx.Graph) -> bool:
     adjacency_matrix = nx.to_numpy_array(graph, dtype=np.int)
 
-    # main diagonal MUST be all 0
     diagonal = [element == 0 for element in np.diagonal(adjacency_matrix)]
     if not np.alltrue(diagonal):
         return False
 
-    # adjacency matrix MUST be symmetric. so it MUST be equal with its transposed version.
     if not np.array_equal(adjacency_matrix, np.transpose(adjacency_matrix)):
         return False
 
-    # neighbors of main diagonal MUST be 1
     number_of_nodes = np.shape(adjacency_matrix)[0]
     for i in range(1, number_of_nodes):
         if not adjacency_matrix[i-1][i] == adjacency_matrix[i][i-1]:
