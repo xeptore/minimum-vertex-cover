@@ -2,7 +2,9 @@ import numpy as np
 import networkx as nx
 
 
-def is_graph_of_type_path(adjacency_matrix: np.ndarray) -> bool:
+def is_graph_of_type_path(graph: nx.Graph) -> bool:
+    adjacency_matrix = nx.to_numpy_array(graph, dtype=np.int)
+
     # main diagonal MUST be all 0
     diagonal = [element == 0 for element in np.diagonal(adjacency_matrix)]
     if not np.alltrue(diagonal):
@@ -18,20 +20,7 @@ def is_graph_of_type_path(adjacency_matrix: np.ndarray) -> bool:
         if not adjacency_matrix[i-1][i] == adjacency_matrix[i][i-1]:
             return False
 
-    # non-neighbors of main diagonal MUST be 0
-    for i in range(number_of_nodes):
-        if not np.alltrue([element == 0 for element in adjacency_matrix[i][0:max(0, i-1)] + adjacency_matrix[i][i+2:number_of_nodes]]):
-            return False
-
-    return True
-
-
-def __test__is_graph_of_type_path():
-    adjacency_matrix = [[0, 1], [1, 0]]
-    if (is_graph_of_type_path(adjacency_matrix)):
-        print("🤣")
-    else:
-        print("🤪")
+    return False
 
 
 def is_graph_of_type_cycle(graph: nx.Graph) -> bool:
@@ -48,3 +37,15 @@ def is_graph_of_type_complete(graph: nx.Graph) -> bool:
         if node_degree != number_of_nodes - 1:
             return False
     return True
+
+
+def is_there_complete_or_circle_component(graph: nx.Graph) -> bool:
+    for cc in nx.connected_components(graph):
+        subgraph = graph.subgraph(cc).copy()
+        if is_graph_of_type_complete(subgraph):
+            return True
+        if is_graph_of_type_cycle(subgraph):
+            return True
+        if is_graph_of_type_path(subgraph):
+            return True
+    return False
